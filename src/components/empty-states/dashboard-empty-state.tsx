@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { client } from "@/lib/client"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { CreateEventCategoryModal } from "./create-event-category-modal"
+import { CreateEventCategoryModal } from "../create-event-category-modal"
 
 export const DashboardEmptyState = () => {
   const queryClient = useQueryClient()

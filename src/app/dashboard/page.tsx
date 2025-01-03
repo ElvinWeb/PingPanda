@@ -1,6 +1,6 @@
 import { CreateEventCategoryModal } from "@/components/create-event-category-modal"
 import { DashboardPage } from "@/components/dashboard-page"
-import { DashboardPageContent } from "@/components/dashboard-page-content"
+import { DashboardPageContent } from "@/components/contents/dashboard-page-content"
 import { Button } from "@/components/ui/button"
 import { db } from "@/db"
 import { currentUser } from "@clerk/nextjs/server"
