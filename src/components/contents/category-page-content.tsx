@@ -1,54 +1,24 @@
 "use client"
 
+import { Heading } from "@/components/heading"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { client } from "@/lib/client"
-import { Event, EventCategory } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { isAfter, isToday, startOfMonth, startOfWeek } from "date-fns"
-import { ArrowUpDown, BarChart } from "lucide-react"
+import { BarChart } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { EmptyCategoryState } from "../empty-states/category-empty-state"
-
-import { Heading } from "@/components/heading"
-import { Button } from "@/components/ui/button"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { cn } from "@/lib/utils"
-import {
-    ColumnDef,
-    ColumnFiltersState,
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    Row,
-    SortingState,
-    useReactTable,
-} from "@tanstack/react-table"
-
-interface CategoryPageContentProps {
-  hasEvents: boolean
-  category: EventCategory
-}
-
-type tabState = "today" | "week" | "month"
+import { CategoryPageContentProps, tabState } from "@/types"
 
 export const CategoryPageContent = ({
   hasEvents: initialHasEvents,
   category,
 }: CategoryPageContentProps) => {
-  const searchParams = useSearchParams()
-
   const [activeTab, setActiveTab] = useState<tabState>("today")
+  const searchParams = useSearchParams()
+  const router = useRouter()
 
   // https://localhost:3000/dashboard/category/sale?page=5&limit=30
   const page = parseInt(searchParams.get("page") || "1", 10)
@@ -86,101 +56,12 @@ export const CategoryPageContent = ({
     enabled: pollingData.hasEvents,
   })
 
-  const columns: ColumnDef<Event>[] = useMemo(
-    () => [
-      {
-        accessorKey: "category",
-        header: "Category",
-        cell: () => <span>{category.name || "Uncategorized"}</span>,
-      },
-      {
-        accessorKey: "createdAt",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              Date
-              <ArrowUpDown className="ml-2 size-4" />
-            </Button>
-          )
-        },
-        cell: ({ row }) => {
-          return new Date(row.getValue("createdAt")).toLocaleString()
-        },
-      },
-      ...(data?.events[0]
-        ? Object.keys(data.events[0].fields as object).map((field) => ({
-            accessorFn: (row: Event) =>
-              (row.fields as Record<string, any>)[field],
-            header: field,
-            cell: ({ row }: { row: Row<Event> }) =>
-              (row.original.fields as Record<string, any>)[field] || "-",
-          }))
-        : []),
-      {
-        accessorKey: "deliveryStatus",
-        header: "Delivery Status",
-        cell: ({ row }) => (
-          <span
-            className={cn("px-2 py-1 rounded-full text-xs font-semibold", {
-              "bg-green-100 text-green-800":
-                row.getValue("deliveryStatus") === "DELIVERED",
-              "bg-red-100 text-red-800":
-                row.getValue("deliveryStatus") === "FAILED",
-              "bg-yellow-100 text-yellow-800":
-                row.getValue("deliveryStatus") === "PENDING",
-            })}
-          >
-            {row.getValue("deliveryStatus")}
-          </span>
-        ),
-      },
-    ],
-
-    [category.name, data?.events]
-  )
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-
-  const table = useReactTable({
-    data: data?.events || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true,
-    pageCount: Math.ceil((data?.eventsCount || 0) / pagination.pageSize),
-    onPaginationChange: setPagination,
-    state: {
-      sorting,
-      columnFilters,
-      pagination,
-    },
-  })
-
-  /**
-   * I FORGOT THIS IN THE VIDEO
-   * Update URL when pagination changes
-   */
-  const router = useRouter()
-
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search)
     searchParams.set("page", (pagination.pageIndex + 1).toString())
     searchParams.set("limit", pagination.pageSize.toString())
     router.push(`?${searchParams.toString()}`, { scroll: false })
   }, [pagination, router])
-
-  /**
-   * END OF WHAT I FORGOT IN THE VIDEO
-   */
 
   const numericFieldSums = useMemo(() => {
     if (!data?.events || data.events.length === 0) return {}
@@ -278,7 +159,7 @@ export const CategoryPageContent = ({
       <Tabs
         value={activeTab}
         onValueChange={(value) => {
-          setActiveTab(value as "today" | "week" | "month")
+          setActiveTab(value as tabState)
         }}
       >
         <TabsList className="mb-2">
@@ -320,81 +201,7 @@ export const CategoryPageContent = ({
           </div>
         </div>
 
-        <Card contentClassName="px-6 py-4">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody>
-              {isFetching ? (
-                [...Array(5)].map((_, rowIndex) => (
-                  <TableRow key={rowIndex}>
-                    {columns.map((_, cellIndex) => (
-                      <TableCell key={cellIndex}>
-                        <div className="h-4 w-full bg-gray-200 animate-pulse rounded" />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </Card>
-      </div>
-
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage() || isFetching}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage() || isFetching}
-        >
-          Next
-        </Button>
+        {/* Event overview table */}
       </div>
     </div>
   )
