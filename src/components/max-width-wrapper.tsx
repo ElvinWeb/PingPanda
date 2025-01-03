@@ -1,15 +1,13 @@
 import { cn } from "@/lib/utils"
 import { ReactNode } from "react"
 
-interface MaxWidthWrapperProps {
-  className?: string
-  children: ReactNode
-}
-
 export const MaxWidthWrapper = ({
   className,
   children,
-}: MaxWidthWrapperProps) => {
+}: {
+  className?: string
+  children: ReactNode
+}) => {
   return (
     <div
       className={cn(

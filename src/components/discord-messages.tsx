@@ -1,32 +1,7 @@
-import { cn } from "@/lib/utils"
+import { cn, getBadgeStyles } from "@/lib/utils"
+import { DiscordMessageProps } from "@/types"
 import { Clock } from "lucide-react"
 import Image from "next/image"
-
-interface DiscordMessageProps {
-  avatarSrc: string
-  avatarAlt: string
-  username: string
-  timestamp: string
-  badgeText?: string
-  badgeColor?: string
-  title: string
-  content: {
-    [key: string]: string
-  }
-}
-
-type BadgeColor = "#43b581" | "#faa61a" | (string & {})
-
-const getBadgeStyles = (color: BadgeColor) => {
-  switch (color) {
-    case "#43b581":
-      return "bg-green-500/10 text-green-400 ring-green-500/20"
-    case "#faa61a":
-      return "bg-yellow-500/10 text-yellow-400 ring-yellow-500/20"
-    default:
-      return "bg-gray-500/10 text-gray-400 ring-gray-500/20"
-  }
-}
 
 export const DiscordMessage = ({
   avatarAlt,

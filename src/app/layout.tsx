@@ -1,12 +1,13 @@
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import { Providers } from "@/components/providers"
-import { EB_Garamond } from "next/font/google"
 import { cn } from "@/lib/utils"
-import "../styles/globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
+import type { Metadata } from "next"
+import { EB_Garamond, Inter } from "next/font/google"
+import { ReactNode } from "react"
+import "../styles/globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+
 const eb_garamond = EB_Garamond({
   subsets: ["latin"],
   variable: "--font-heading",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
 }>) {
   return (
     <ClerkProvider>
