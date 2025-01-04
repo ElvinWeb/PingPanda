@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card"
 import { client } from "@/lib/client"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { CreateEventCategoryModal } from "../create-event-category-modal"
+import Image from "next/image"
 
 export const DashboardEmptyState = () => {
   const queryClient = useQueryClient()
@@ -19,10 +20,11 @@ export const DashboardEmptyState = () => {
   return (
     <Card className="flex flex-col items-center justify-center rounded-2xl flex-1 text-center p-6">
       <div className="flex justify-center w-full">
-        <img
+        <Image
           src="/brand-asset-wave.png"
           alt="No categories"
           className="size-48 -mt-24"
+          fill
         />
       </div>
 

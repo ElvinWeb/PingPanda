@@ -7,6 +7,7 @@ import { currentUser } from "@clerk/nextjs/server"
 import { PlusIcon } from "lucide-react"
 import { redirect } from "next/navigation"
 import { createCheckoutSession } from "@/lib/stripe"
+import { PaymentSuccessModal } from "@/components/payment-success-modal"
 
 interface PageProps {
   searchParams: {
@@ -44,6 +45,8 @@ const Page = async ({ searchParams }: PageProps) => {
 
   return (
     <>
+      {success ? <PaymentSuccessModal /> : null}
+
       <DashboardPage
         cta={
           <CreateEventCategoryModal>
