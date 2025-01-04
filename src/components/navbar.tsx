@@ -1,8 +1,8 @@
 import Link from "next/link"
 import { MaxWidthWrapper } from "./max-width-wrapper"
+import { SignOutButton } from "@clerk/nextjs"
 import { Button, buttonVariants } from "./ui/button"
 import { ArrowRight } from "lucide-react"
-import { SignOutButton } from "@clerk/nextjs"
 import { currentUser } from "@clerk/nextjs/server"
 
 export const Navbar = async () => {

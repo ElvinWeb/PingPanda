@@ -6,6 +6,7 @@ import { db } from "@/db"
 import { currentUser } from "@clerk/nextjs/server"
 import { PlusIcon } from "lucide-react"
 import { redirect } from "next/navigation"
+import { createCheckoutSession } from "@/lib/stripe"
 
 interface PageProps {
   searchParams: {
@@ -30,19 +31,33 @@ const Page = async ({ searchParams }: PageProps) => {
 
   const intent = searchParams.intent
 
+  if (intent === "upgrade") {
+    const session = await createCheckoutSession({
+      userEmail: user.email,
+      userId: user.id,
+    })
+
+    if (session.url) redirect(session.url)
+  }
+
   const success = searchParams.success
 
   return (
-    <DashboardPage cta={
-      <CreateEventCategoryModal>
-        <Button className="w-full sm:w-fit">
-          <PlusIcon className="size-4 mr-2" />
-          Add Category
-        </Button>
-      </CreateEventCategoryModal>
-    } title="Dashboard">
-      <DashboardPageContent />
-    </DashboardPage>
+    <>
+      <DashboardPage
+        cta={
+          <CreateEventCategoryModal>
+            <Button className="w-full sm:w-fit">
+              <PlusIcon className="size-4 mr-2" />
+              Add Category
+            </Button>
+          </CreateEventCategoryModal>
+        }
+        title="Dashboard"
+      >
+        <DashboardPageContent />
+      </DashboardPage>
+    </>
   )
 }
 

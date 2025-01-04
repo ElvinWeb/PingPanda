@@ -48,3 +48,10 @@ export const EMOJI_OPTIONS = [
   { emoji: "💡", label: "Idea" },
   { emoji: "🔔", label: "Notification" },
 ]
+
+export const INCLUDED_FEATURES = [
+  "10.000 real-time events per month",
+  "10 event categories",
+  "Advanced analytics and insights",
+  "Priority support",
+]
