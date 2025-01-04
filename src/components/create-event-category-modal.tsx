@@ -3,27 +3,16 @@
 import { COLOR_OPTIONS, EMOJI_OPTIONS } from "@/constants"
 import { client } from "@/lib/client"
 import { cn } from "@/lib/utils"
-import { CATEGORY_NAME_VALIDATOR } from "@/lib/validators/category-validator"
+import { EVENT_CATEGORY_VALIDATOR } from "@/lib/validators/event-category-validator"
+import { EventCategoryForm } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ReactNode, useState } from "react"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { Modal } from "./ui/modal"
-
-const EVENT_CATEGORY_VALIDATOR = z.object({
-  name: CATEGORY_NAME_VALIDATOR,
-  color: z
-    .string()
-    .min(1, "Color is required")
-    .regex(/^#[0-9A-F]{6}$/i, "Invalid color format."),
-  emoji: z.string().emoji("Invalid emoji").optional(),
-})
-
-type EventCategoryForm = z.infer<typeof EVENT_CATEGORY_VALIDATOR>
 
 export const CreateEventCategoryModal = ({
   children,
