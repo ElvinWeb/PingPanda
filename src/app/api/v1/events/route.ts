@@ -1,17 +1,11 @@
-import { FREE_QUOTA, PRO_QUOTA } from "@/config"
-import { db } from "@/db"
-import { DiscordClient } from "@/lib/discord-client"
-import { CATEGORY_NAME_VALIDATOR } from "@/lib/validators/category-validator"
+import { REQUEST_VALIDATOR } from "@/lib/validators/request-validator"
 import { NextRequest, NextResponse } from "next/server"
+import { FREE_QUOTA, PRO_QUOTA } from "@/config"
+import { DiscordClient } from "@/lib/discord-client"
+import { db } from "@/db"
 import { z } from "zod"
 
-const REQUEST_VALIDATOR = z
-  .object({
-    category: CATEGORY_NAME_VALIDATOR,
-    fields: z.record(z.string().or(z.number()).or(z.boolean())).optional(),
-    description: z.string().optional(),
-  })
-  .strict()
+
 
 export const POST = async (req: NextRequest) => {
   try {
